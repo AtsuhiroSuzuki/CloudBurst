@@ -1,0 +1,295 @@
+<!DOCTYPE html>  
+<html>    
+<head>
+	<style>
+		body {
+			width: 660px;
+			height: 400px;
+			/*https://digitalsynopsis.com/design/beautiful-color-gradients-backgrounds/*/
+			/*background-image: url('images/trianglify.png');*/
+			/*background-image: linear-gradient(to bottom right, #515346, #282923); Dark Grey*/
+			/*background-image: linear-gradient(to bottom right, #ffecd2,#fcb69f); Peach*/
+			background-image: linear-gradient(to bottom right, #a1c4fd, #c2e9fb); /*Sky blue*/
+			/*background-image: linear-gradient(to bottom right, #cfd9df,#e2ebf0); /*Metallic*/*/
+			/*background-image: linear-gradient(to bottom right, #a3bded,#6991c7);Sunset Sky*/
+			/*background-image: linear-gradient(to top right, #13547a,#80d0c7); Shallow Ocean*/
+			/*background-image: linear-gradient(to top right, #c79081,#dfa579); Desert*/
+			/*background-image: linear-gradient(to top right, #09203f,#537895); Twilight*/
+
+
+			background-size: 850px 500px;
+			opacity: .85;
+		}
+		#logo {
+			color: #F7F3F2;
+			text-shadow: 0px 0px 2px gray; /*#f2e1d9;*/
+		}
+		#notesHeader {
+			color: #F7F3F2;
+			text-shadow: 0px 0px 2px gray;
+			border-bottom: 1px solid currentColor;
+			position: absolute;
+			right: 60px;
+			top: 15px;
+		}
+
+		.containerShort {
+			padding-top: 3px;
+			width: 500px;
+			height: 270px;
+		}
+
+		.containerTall {
+			padding-top: 3px;
+			width: 500px;
+			height: 250px;
+		}
+
+		.containerNone {
+			padding-top: 5px;
+			width: 500px;
+			height: 310px;
+		}
+
+		.hideToolbar {
+			display: none;
+		}
+
+		#noteText {
+			box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.2);
+			position: relative;
+			z-index: 0;
+			background-color: #F7F3F2;
+		}
+		.ql-toolbar {
+			border-radius: 20px 20px 0 0;
+			background: #f2e1d9;
+			position: relative;
+		}
+		.ql-toolbar::before {
+			content: "";
+			border-radius: 20px 20px 0 0;
+			box-shadow: 3px 3px 2px 0px rgba(0, 0, 0, 0.2);
+			position: absolute;
+			top:0;
+			bottom: 0;
+			left:0;
+			right: 0;
+			z-index: -1;
+		}
+		.titleBox {
+			border-radius: 20px;
+			padding: 10px;
+			width: 476px;
+			height: 10px; 
+			margin-bottom: 5px;
+			background-color: #F7F3F2;
+			box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.2);
+			transition: all 0.3s ease 0s;
+		}
+
+		:focus {outline:0;}
+
+		/* REPLACE WITH SCROLLBAR LIBRARY*/
+
+		::-webkit-scrollbar {
+			width: 7px;
+		}
+
+		::-webkit-scrollbar-track {
+			opacity: 1;
+		}
+
+		::-webkit-scrollbar-corner { 
+			opacity: 1;
+		}
+
+		::-webkit-scrollbar-thumb { 
+			border-radius: 5px;
+			background: #f2e1d9;
+			opacity: 85;
+			visibility: hidden;
+		}
+
+		.ql-editor::-webkit-scrollbar {
+			width: 14px;
+		}
+
+		.ql-editor::-webkit-scrollbar-thumb {
+			border: 4px solid rgba(0, 0, 0, 0);
+			-webkit-border-radius: 10px;
+    		background-clip: padding-box;
+		}
+
+		.ql-editor:hover::-webkit-scrollbar-thumb {
+			visibility: visible;
+		}
+
+		.sidebar:hover::-webkit-scrollbar-thumb {
+			visibility: visible;
+		}
+
+		.sidebar {
+			height:355px;
+			width:150px;
+			position:fixed!important;
+			overflow:scroll;
+			right: 0;
+			padding-top: 5px;
+			margin-right: 5px;
+			transition: all .25s ease .1s;
+		}
+
+		.sidebar-item {
+			background-color: #F7F3F2; 
+		    width: 65%;
+		    min-height: 16px;
+		    position: relative;
+		    display: block;
+		    padding: 8px 0px;
+		    padding-left: 12px;
+		    padding-right: 20px;
+		    margin: 0 0 10px 8px;
+		    text-align: left;
+		    white-space: nowrap;
+		    text-overflow: ellipsis;
+		    overflow: hidden;
+		    border: none;
+		    float: none;
+		    outline: 0;
+		    cursor:pointer;
+		    border-bottom:1px solid #ccc;		    
+		    border-left:1px solid #ccc;	    
+		    border-radius: 25px;
+		    box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.2);
+		    transition: all 0.3s ease 0s;
+		}
+
+		.sidebar-item-hover {
+			background-color: #f2e1d9;
+			box-shadow: 0px 5px 20px rgba(228, 195, 180, 0.4);
+			border-bottom:1px solid #f5cebd !important;		    
+		    border-left:1px solid #f5cebd !important;
+			transform: translateY(-3px);
+		}
+
+		.sidebar-item-selected {
+			background-color: #f8dcd3;
+			box-shadow: 0px 5px 20px rgba(228, 195, 180, 0.4);
+			border-bottom:1px solid #f5cebd !important;		    
+		    border-left:1px solid #f5cebd !important;
+			transform: translateY(-3px);
+		}
+
+		.sidebar-item-delete{
+			background-color: #ff4d4d;
+			box-shadow: 5px 5px 7px rgba(255, 102, 102, 0.4);
+			border-bottom:1px solid #cc0000 !important;		    
+		    border-left:1px solid #cc0000 !important;
+			transform: translateY(-3px);
+		}
+
+		.delete-button {
+			cursor:pointer;
+			position: absolute;
+			right: 2px;
+			background-color: transparent;
+			border: none;
+			transition: all 0.3s ease 0s;
+		}
+
+		.sidebar-add {
+			cursor:pointer;
+			background-color: #F7F3F2; 
+			position: relative;
+		    width: 30%;
+		    display: block;
+		    padding: 8px 16px;
+		    margin: 0 0 10px 33px;
+		    text-align: center;
+		    border: none;
+		    float: none;
+		    outline: 0; 
+		    border-bottom:1px solid #ccc;		    
+		    border-left:1px solid #ccc;	   
+		    border-radius: 25px;
+		    box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.2);
+		    transition: all 0.3s ease 0s;
+		}
+
+		.sidebar-add:hover {
+			background-color: #99ffbb;
+			box-shadow: 0px 5px 20px rgba(153, 255, 187, 0.4);
+			border-bottom:1px solid #1aff66;		    
+		    border-left:1px solid #1aff66;
+			transform: translateY(-3px);
+		}
+
+		.infoTooltip {
+			/*visibility: hidden;*/
+			width: 120px;
+			background-color: black;
+			color: #fff;
+			text-align: center;
+			border-radius: 6px;
+			padding: 5px 0;
+			position: relative;
+			z-index: 1;
+			/*opacity: 0;*/
+  			transition: opacity .3s;
+		}
+
+		.infoTooltip::after {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			margin-left: -5px;
+			border-width: 5px;
+			border-style: solid;
+			border-color: black transparent transparent transparent;
+		}
+
+		.infoButton:hover .infoTooltip {
+			visibility: visible;
+			opacity: 1;
+		}
+
+	</style>
+</head>
+<body>
+	<!-- Include stylesheets -->
+	<link href="css/quill.snow.css" rel="stylesheet">
+	<link href="libraries/highlightjs/styles/monokai-sublime.css" rel="stylesheet">
+
+
+	<div>
+		<h1 id="logo">Cloudburst</h1>
+	</div>
+
+	<!-- Create notes sidebar -->
+	<div>
+		<h2 id="notesHeader">Notes</h2>
+	</div>
+	<div class="sidebar" id="sidebar">
+		<a class="sidebar-add" id="sidebar-add">+</a>
+	</div>
+
+	<!-- Create the editor container -->
+	<input class="titleBox" id="titleText" placeholder="Give me a title!">
+	</input>
+
+	<div id="noteTextContainer">
+		<div id="noteText" style="border-radius: 0 0 15px 15px">
+		</div>
+	</div>
+
+	<!-- Include libraries -->
+	<script src="libraries/highlightjs/highlight.pack.js"></script>
+	<script src="libraries/quill/quill.js"></script>
+
+	<!-- Initialize Quill editor -->
+	<script src="globalConstants.js"></script>
+	<script src="popup.js"></script>
+</body>
+</html>
