@@ -1,17 +1,15 @@
 ## BUG TRACKER
 
-* Undo on new note reverts to previous note. Maybe change clearText function to innerHTML = ""
-
 ## TODO
 
   *Make new themes
-  *Timestamps
+  *Timestamps (Change saveNote/saveTitle)
   *Make settings
     **Window Size (Small, Medium, Large)
     **Themes
-    **Keyboard Shortcuts (Switching lines [ctrl-shift-up/down], switching notes [ctrl-tab], changing from title
+    **Keyboard Shortcuts (Switching lines [ctrl-shift-up/down], switching notes [ctrl-tab], changing from title (tab, shift-tab to go back, enter), alt-n to open notes app
        to note with tab and vice versa with shift-tab)
-  *Moving note tabs (draggable library?)
+  *On new note, move focus to title
   *Google Merchant payments
 
 ### Future: 

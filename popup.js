@@ -1,4 +1,5 @@
-//chrome.storage.local.clear()
+//chrome.storage.local.clear();
+
 var currentNoteId;
 
 var fontNames = initializeFonts();
@@ -17,7 +18,7 @@ toolbarMap['removeFormatting'] = ['clean'];
 toolbarMap['link'] = ['link'];
 
 function getToolbar(callback){
-	var currentToolbar = [];
+	let currentToolbar = [];
 	chrome.storage.local.get(['ToolbarSettings'], function (result) {
 		if(result.ToolbarSettings == undefined){
 			for(let i = 0; i < GLOBAL_CONSTANTS.DEFAULT_TOOLBAR.length; i++){
@@ -47,7 +48,10 @@ getToolbar(function(result){
 		bounds: document.getElementById('noteText'),
 		modules: {
 			syntax: true,
-			toolbar: result
+			toolbar: result,
+			history: {
+		      userOnly: true
+		    }
 		}
 	});
 	loadNote();
@@ -66,7 +70,7 @@ getToolbar(function(result){
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    var add = document.getElementById("sidebar-add");
+    let add = document.getElementById("sidebar-add");
     add.addEventListener('click', function() {
     	createNote();
     });
@@ -74,6 +78,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
 noteText.onkeyup = function(){saveNote()};
 titleText.onkeyup = function(){saveTitle()};
+
+var noteList = document.getElementById("sidebar")
+Sortable.create(noteList, {
+        draggable: ".sidebar-item",
+        //chosenClass: "sortable-chosen",
+        animation: 200,
+        //filter: 'sidebar-add',
+        //scroll: document.getElementById('browse-thoughts'),
+        //scrollSensitivity: 50,
+        //filter: ".ignore-elements",
+        //scrollSpeed: 10, // px
+        onEnd: function (evt){
+        	let oldIndex = evt.oldIndex;
+        	let newIndex = evt.newIndex;
+        	console.log('Old Index: ' + oldIndex);
+        	console.log('Old Index: ' + newIndex);
+			if(oldIndex != newIndex){
+				chrome.storage.local.get(['NoteSet'], function (result) {
+					let oldNoteArray = Object.values(result.NoteSet);
+					let newNoteArray = noteArraySplice(oldNoteArray, oldIndex, newIndex);
+					chrome.storage.local.set({
+						NoteSet : newNoteArray
+					});
+				});
+			}
+        }
+});
+
+function noteArraySplice(arr, oldIndex, newIndex){
+	let arraySize = arr.length-1;
+	oldIndex = arraySize-oldIndex;
+	newIndex = arraySize-newIndex;
+	let draggedNote = arr[oldIndex];
+	arr.splice(oldIndex,1);
+	arr.splice(newIndex, 0, draggedNote);
+	return arr;
+}
+
 
 /*
 	function - save to db
@@ -108,7 +150,7 @@ function loadNote(){
 	});
 	chrome.storage.local.get(['NoteSet'], function (result) {
 		if(result.NoteSet != undefined){	
-			var noteSetArray = Object.values(result.NoteSet);
+			let noteSetArray = Object.values(result.NoteSet);
 			for (var i = 0; i < noteSetArray.length; i++) {
 				createNoteButton(noteSetArray[i]);
 			}
@@ -129,13 +171,14 @@ function createNote(){
 }
 
 function initializeNote(id){
-	var d = new Date();
-  	var dateTimeString = d.toDateString() + ", " + d.toLocaleTimeString();
-	var emptyNote = {titleText: "", noteText: "", creationTime: dateTimeString};
+	// TODO: Utilize creationTime field
+	let d = new Date();
+  	let dateTimeString = d.toDateString() + ", " + d.toLocaleTimeString();
+	let emptyNote = {titleText: "", noteText: "", creationTime: dateTimeString};
 	chrome.storage.local.set({
 		[id]: emptyNote
 	}, function () {
-		var lastNote = document.getElementById(currentNoteId);
+		let lastNote = document.getElementById(currentNoteId);
 		if(lastNote != null)
 			lastNote.className = "sidebar-item";
 		chrome.storage.local.set({
@@ -143,7 +186,7 @@ function initializeNote(id){
 		});
 		currentNoteId = id;
 		createNoteButton(id);
-		noteQuill.setContents("");
+		noteQuill.setContents([{ insert: '\n' }]);
 		titleText.value = "";
 		chrome.storage.local.set({
 			CurrentNoteId: id,
@@ -170,7 +213,7 @@ function initializeNote(id){
 
 function createNoteButton(id){
 	chrome.storage.local.get([id.toString()], function (result) {
-		var buttonItem = document.createElement("a");
+		let buttonItem = document.createElement("li");
 		if(id == currentNoteId)
 			buttonItem.className = "sidebar-item sidebar-item-selected";
 		else
@@ -178,11 +221,11 @@ function createNoteButton(id){
 		buttonItem.id = id;
 		buttonItem.appendChild(document.createTextNode(result[id].titleText));
 
-		var deleteButton = document.createElement("button");
+		let deleteButton = document.createElement("button");
 		deleteButton.className = "delete-button";
 		deleteButton.id = id + "Delete";
 
-		var deleteImage = document.createElement("img");
+		let deleteImage = document.createElement("img");
 		deleteImage.src = "images/trash.png";
 		deleteImage.height = 13;
 		deleteImage.width = 13;
@@ -190,11 +233,11 @@ function createNoteButton(id){
 		deleteButton.appendChild(deleteImage);
 		buttonItem.appendChild(deleteButton);
 
-		var sidebar = document.getElementById("sidebar");
+		let sidebar = document.getElementById("sidebar");
 		sidebar.insertBefore(buttonItem, sidebar.childNodes[0]);
 
-		var noteButton = document.getElementById(id);
-	    var noteDeleteButton = document.getElementById(id + 'Delete');
+		let noteButton = document.getElementById(id);
+	    let noteDeleteButton = document.getElementById(id + 'Delete');
 
 	    
 	    /*noteButton.addEventListener('contextmenu', function(event){
@@ -239,15 +282,16 @@ function createNoteButton(id){
 function switchNote(id){
 	chrome.storage.local.get([id.toString()], function (result) {
 		if(result[id] != undefined){
-			var prevNoteButton = document.getElementById(currentNoteId);
+			let prevNoteButton = document.getElementById(currentNoteId);
 			noteQuill.setContents(result[id].noteText);
 			titleText.value = result[id].titleText;
 			currentNoteId = id;
 			chrome.storage.local.set({
 				CurrentNoteId : id
 			});
-			var noteButton = document.getElementById(id);
+			let noteButton = document.getElementById(id);
 
+			// Check for null because deleteNote also uses switchNote
 			if(prevNoteButton != null)
 				prevNoteButton.className = "sidebar-item";
 			noteButton.className = "sidebar-item sidebar-item-selected";
@@ -256,10 +300,10 @@ function switchNote(id){
 }
 
 function deleteNote(id){
-	var noteElement = document.getElementById(id);
+	let noteElement = document.getElementById(id);
 	noteElement.remove();
 	chrome.storage.local.get(['NoteSet'], function (result) {
-		var noteSetArray = Object.values(result.NoteSet);
+		let noteSetArray = Object.values(result.NoteSet);
 		if(noteSetArray.length == 1){
 			chrome.storage.local.set({
 				NoteSet : []
@@ -268,7 +312,7 @@ function deleteNote(id){
 			});
 		}
 		else{
-			var index = noteSetArray.indexOf(parseInt(id,10));
+			let index = noteSetArray.indexOf(parseInt(id,10));
 			if(id == currentNoteId){
 				if(index != 0){
 					switchNote(noteSetArray[index-1]);
@@ -289,13 +333,13 @@ function deleteNote(id){
 
 function initializeFonts() {
 	// specify the fonts you would 
-	var fonts = ['Sans Serif', 'Arial', 'Courier', 'Garamond', 'Tahoma', 'Times New Roman', 'Verdana'];
+	let fonts = ['Sans Serif', 'Arial', 'Courier', 'Garamond', 'Tahoma', 'Times New Roman', 'Verdana'];
 	// generate code friendly names
 
 	// add fonts to style
-	var fontStyles = "";
+	let fontStyles = "";
 	fonts.forEach(function(font) {
-	    var fontName = getFontName(font);
+	    let fontName = getFontName(font);
 	    fontStyles += ".ql-snow .ql-picker.ql-font .ql-picker-label[data-value=" + fontName + "]::before, .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=" + fontName + "]::before {" +
 	        "content: '" + font + "';" +
 	        "font-family: '" + font + "', sans-serif;" +
@@ -304,13 +348,13 @@ function initializeFonts() {
 	        " font-family: '" + font + "', sans-serif;" +
 	        "}";
 	});
-	var node = document.createElement('style');
+	let node = document.createElement('style');
 	node.innerHTML = fontStyles;
 	document.body.appendChild(node);
 
 	
 	// Add fonts to whitelist
-	var Font = Quill.import('formats/font');
+	let Font = Quill.import('formats/font');
 	Font.whitelist = fontNames;
 	Quill.register(Font, true);
 
