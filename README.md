@@ -1,6 +1,31 @@
-## BUG TRACKER
+# CloudBurst
+This is a note taking web extension designed to be simple, yet powerful - featuring a clean UI and intuitive controls.
+Currently still in development and sporting a temporary design - to be released in the coming months on the Chrome Web Store.
 
-## TODO
+# Overview
+The notes extension works by simply clicking the extension button in the browser, and a popup will appear with CloudBurst. You view one note at a time, each sporting a customizable title. You can have as many notes as you like, which you can navigate with the notes bar on the side.
+![Overview](images/Screenshots/Overview.PNG)
+
+Supports full rich text, including images.
+![Rich Text](images/Screenshots/RichText.PNG)
+
+Featuring a fully customizable toolbar.
+![Toolbar](images/Screenshots/Toolbar.PNG)
+
+Deleting and adding notes has never been easier!
+![Delete and Add](images/Screenshots/DeleteAdd.gif)
+
+Features include changing order of notes and code blocks with automatic syntax highlighting.
+![Drag](images/Screenshots/Drag.gif)
+
+## In Progress
+* Keyboard Shortcuts
+* Custom Themes
+
+## BUG TRACKER - For Developer Use
+  *Toolbar on font types with long names get wonky
+
+## TODO - For Developer Use
 
   *Make new themes
   *Timestamps (Change saveNote/saveTitle)
